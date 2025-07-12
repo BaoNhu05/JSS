@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máy Tính Tiền Điện</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .pricing-table {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 5px solid #ff6b6b;
+        }
+
+        .pricing-table h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s;
+        }
+
+        .price-row:hover {
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+
+        .price-row:last-child {
+            border-bottom: none;
+        }
+
+        .tier {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #ff6b6b;
+            font-size: 1.1em;
+        }
+
+        .calculator {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .result {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .result h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .total-amount {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .breakdown {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .breakdown h4 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .error {
+            color: #ff4757;
+            background: #ffe3e3;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #ff4757;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .total-amount {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ TÍNH TIỀN ĐIỆN</h1>
+            <p>Máy tính tiền điện theo biểu giá bậc thang Việt Nam</p>
+        </div>
+        
+        <div class="content">
+            <div class="pricing-table">
+                <h3>📋 Biểu Giá Điện Sinh Hoạt</h3>
+                <div class="price-row">
+                    <span class="tier">Bậc 1: 0 - 50 kWh</span>
+                    <span class="price">500 đ/kWh</span>
+                </div>
+                <div class="price-row">
+                    <span class="tier">Bậc 2: 51 - 100 kWh</span>
+                    <span class="price">650 đ/kWh</span>
+                </div>
+                <div class="price-row">
+                    <span class="tier">Bậc 3: 101 - 200 kWh</span>
+                    <span class="price">850 đ/kWh</span>
+                </div>
+                <div class="price-row">
+                    <span class="tier">Bậc 4: 201 - 300 kWh</span>
+                    <span class="price">1,100 đ/kWh</span>
+                </div>
+                <div class="price-row">
+                    <span class="tier">Bậc 5: Trên 300 kWh</span>
+                    <span class="price">1,300 đ/kWh</span>
+                </div>
+            </div>
+
+            <div class="calculator">
+                <div class="input-group">
+                    <label for="consumption">💡 Nhập số điện tiêu thụ (kWh):</label>
+                    <input type="number" id="consumption" placeholder="Ví dụ: 250" min="0" step="0.1">
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateBill()">
+                    🧮 Tính Tiền Điện
+                </button>
+            </div>
+
+            <div class="result" id="result">
+                <h3>💰 Kết Quả Tính Toán</h3>
+                <div class="total-amount" id="totalAmount">0 đ</div>
+                <div class="breakdown" id="breakdown">
+                    <h4>📊 Chi Tiết Tính Toán</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Biểu giá điện theo bậc thang
+        const electricityRates = [
+            { min: 0, max: 50, rate: 500 },
+            { min: 51, max: 100, rate: 650 },
+            { min: 101, max: 200, rate: 850 },
+            { min: 201, max: 300, rate: 1100 },
+            { min: 301, max: Infinity, rate: 1300 }
+        ];
+
+        function calculateBill() {
+            const consumption = parseFloat(document.getElementById('consumption').value);
+            const resultDiv = document.getElementById('result');
+            const totalAmountDiv = document.getElementById('totalAmount');
+            const breakdownDiv = document.getElementById('breakdown');
+
+            // Xóa thông báo lỗi cũ
+            const oldError = document.querySelector('.error');
+            if (oldError) {
+                oldError.remove();
+            }
+
+            // Kiểm tra dữ liệu đầu vào
+            if (isNaN(consumption) || consumption < 0) {
+                showError('Vui lòng nhập số điện tiêu thụ hợp lệ (số dương)');
+                return;
+            }
+
+            if (consumption === 0) {
+                showError('Số điện tiêu thụ phải lớn hơn 0');
+                return;
+            }
+
+            // Tính toán tiền điện
+            let totalCost = 0;
+            let remainingConsumption = consumption;
+            let breakdown = [];
+
+            for (let tier of electricityRates) {
+                if (remainingConsumption <= 0) break;
+
+                let tierConsumption;
+                if (tier.max === Infinity) {
+                    tierConsumption = remainingConsumption;
+                } else {
+                    tierConsumption = Math.min(remainingConsumption, tier.max - tier.min + 1);
+                }
+
+                if (tierConsumption > 0) {
+                    let tierCost = tierConsumption * tier.rate;
+                    totalCost += tierCost;
+                    
+                    breakdown.push({
+                        tier: getTierName(tier),
+                        consumption: tierConsumption,
+                        rate: tier.rate,
+                        cost: tierCost
+                    });
+
+                    remainingConsumption -= tierConsumption;
+                }
+            }
+
+            // Hiển thị kết quả
+            displayResult(consumption, totalCost, breakdown);
+        }
+
+        function getTierName(tier) {
+            if (tier.min === 0) return 'Bậc 1 (0-50 kWh)';
+            if (tier.min === 51) return 'Bậc 2 (51-100 kWh)';
+            if (tier.min === 101) return 'Bậc 3 (101-200 kWh)';
+            if (tier.min === 201) return 'Bậc 4 (201-300 kWh)';
+            if (tier.min === 301) return 'Bậc 5 (>300 kWh)';
+        }
+
+        function displayResult(consumption, totalCost, breakdown) {
+            const resultDiv = document.getElementById('result');
+            const totalAmountDiv = document.getElementById('totalAmount');
+            const breakdownDiv = document.getElementById('breakdown');
+
+            // Hiển thị tổng tiền
+            totalAmountDiv.textContent = formatCurrency(totalCost);
+
+            // Hiển thị chi tiết
+            let breakdownHTML = '<h4>📊 Chi Tiết Tính Toán</h4>';
+            
+            breakdown.forEach(item => {
+                breakdownHTML += `
+                    <div class="breakdown-item">
+                        <span>${item.tier}: ${item.consumption.toFixed(1)} kWh × ${formatCurrency(item.rate)}</span>
+                        <span>${formatCurrency(item.cost)}</span>
+                    </div>
+                `;
+            });
+
+            breakdownHTML += `
+                <div class="breakdown-item">
+                    <span><strong>Tổng cộng: ${consumption.toFixed(1)} kWh</strong></span>
+                    <span><strong>${formatCurrency(totalCost)}</strong></span>
+                </div>
+            `;
+
+            breakdownDiv.innerHTML = breakdownHTML;
+
+            // Hiển thị kết quả với hiệu ứng
+            resultDiv.style.display = 'block';
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            const calculatorDiv = document.querySelector('.calculator');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = '⚠️ ' + message;
+            calculatorDiv.appendChild(errorDiv);
+
+            // Ẩn kết quả nếu có
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Xử lý phím Enter
+        document.getElementById('consumption').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateBill();
+            }
+        });
+
+        // Xử lý thay đổi input để xóa lỗi
+        document.getElementById('consumption').addEventListener('input', function() {
+            const errorDiv = document.querySelector('.error');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        });
+    </script>
+</body>
+</html>
